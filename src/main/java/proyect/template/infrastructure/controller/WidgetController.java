@@ -34,6 +34,10 @@ public class WidgetController {
         return Map.of("status", "ok");
     }
 
+    @GetMapping("/test-500")
+    public String test500() {
+        throw new RuntimeException("boom");
+    }
     @Operation(summary = "Create widget")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Widget created"),
