@@ -35,9 +35,11 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core:10.17.0'
 	implementation 'org.flywaydb:flyway-database-postgresql:10.17.0'
 	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
 
 	compileOnly 'org.projectlombok:lombok'
 
+	runtimeOnly 'io.opentelemetry:opentelemetry-exporter-otlp'
 	runtimeOnly 'org.postgresql:postgresql'
 
 	annotationProcessor 'org.projectlombok:lombok'
