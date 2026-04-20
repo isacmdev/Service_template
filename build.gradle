@@ -36,6 +36,8 @@ dependencies {
 	implementation 'org.flywaydb:flyway-database-postgresql:10.17.0'
 	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
 	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	compileOnly 'org.projectlombok:lombok'
 
