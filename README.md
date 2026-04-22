@@ -1,82 +1,99 @@
-## Observabilidad
+# Observabilidad
 
-### Métricas (Prometheus)
-Endpoint disponible en:
-[http://localhost:8080/actuator/prometheus](http://localhost:8080/actuator/prometheus)
-[http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+## 🚀 Ejecución completa (recomendado)
 
-**Permite visualizar:**
-- Request Rate
-- Error Rate (por código HTTP)
-- Latencia de requests
+Levanta toda la plataforma (app + base de datos + observabilidad):
 
-### Trazas (Jaeger)
-UI disponible en:
-[http://localhost:16686/search](http://localhost:16686/search)
+```bash
+docker compose -f compose.yml -f compose.observability.yml up --build
+```
 
-**Permite visualizar:**
-- Trazas distribuidas
-- Spans por request
+## ✅ Verificación manual
 
-### Dashboards (Grafana)
+1. Estado de la aplicación
 
-Se incluye un dashboard RED exportado en:
+   `http://localhost:8080/actuator/health`
 
-observability/grafana/dashboards/red-dashboard-template.json
+   Respuesta esperada:
 
-Este dashboard permite visualizar:
+   ```json
+   {"status":"UP"}
+   ```
+
+2. Métricas (Prometheus)
+
+   `http://localhost:8080/actuator/prometheus`
+
+   Ejemplos de métricas:
+
+   - `http_server_requests_seconds`
+   - `jvm_memory_used_bytes`
+
+3. Trazas (Jaeger)
+
+   `http://localhost:16686`
+
+   Pasos:
+
+   - Seleccionar servicio: `template`
+   - Click en Find Traces
+
+4. Grafana
+
+   `http://localhost:3000`
+
+   Credenciales:
+
+   - `user: admin`
+   - `pass: admin`
+
+## 📊 Dashboard RED (Grafana)
+
+Ubicación:
+
+`observability/grafana/dashboards/red-dashboard-template.json`
+
+Para usarlo:
+
+- Abrir Grafana
+- Ir a (+) → Import dashboard
+- Subir el archivo red-dashboard-template.json o pegar su contenido
+
+Incluye:
 
 - Request Rate
 - Error Rate (5xx)
 - Latencia (p95)
 
-Para usarlo:
+## 🛑 Apagar entorno
 
-1. Abrir Grafana
-2. Ir a **(+) → Import dashboard**
-3. Subir el archivo `red-dashboard-template.json` o pegar su contenido
-4. Seleccionar Prometheus como datasource
+```bash
+docker compose -f compose.yml -f compose.observability.yml down
+```
 
-> Nota: es necesario tener Prometheus configurado como datasource en Grafana.
+## 🐳 Ejecución aislada de la app (debug)
 
+Solo para pruebas puntuales sin observabilidad.
 
-## 🐳 Docker
-
-### Build de la imagen
+Build
 
 ```bash
 docker build -t template-app .
 ```
 
----
-
-### Ejecutar la app
+Run
 
 ```bash
 docker run -p 8080:8080 template-app
 ```
 
-App disponible en:
+Verificación:
 
-http://localhost:8080
+`http://localhost:8080/actuator/health`
 
----
+## 🔍 Verificación de imagen (multi-stage)
 
-### Verificar que funciona
-
-Health check:
-
-http://localhost:8080/actuator/health
-
-Respuesta esperada:
-
-```json
-{"status":"UP"}
-```
-
----
-
-### Verificar multi-stage (sin Gradle en runtime)
+Validar que la imagen final no incluye herramientas de build:
 
 ```bash
 docker ps
@@ -86,7 +103,6 @@ gradle -v
 
 Resultado esperado:
 
-```
+```text
 gradle: not found
 ```
----

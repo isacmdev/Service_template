@@ -1,39 +1,32 @@
 # 📊 ESTADO ACTUAL DE CAMBIOS 
-**Actualizado:** 22/04/2026, 17:56:27 
+**Actualizado:** 22/04/2026, 18:11:34 
 **Proyecto:** C:\Users\Usuario\Desktop\Proyectos\Java\template 
-**Último commit:** 3f5be79 - feat(docker): agrega compose con postgres y ajusta datasource interno (73 minutes ago) 
+**Último commit:** 8355a2a - feat(observability): agrega stack OTel/Prometheus/Grafana y ajusta endpoint OTLP (13 minutes ago) 
 
 ## 📊 RESUMEN DE CAMBIOS PENDIENTES
 
-- **Total archivos:** 4
+- **Total archivos:** 1
 - **📝 Nuevos:** 0
-- **✏️ Modificados:** 4
+- **✏️ Modificados:** 1
 - **🗑️ Eliminados:** 0
-- **✅ En staging:** 4 (listos para commit)
-- **Líneas añadidas:** +80
-- **Líneas eliminadas:** -1
-- **Balance neto:** +79 líneas
+- **Líneas añadidas:** +66
+- **Líneas eliminadas:** -50
+- **Balance neto:** +16 líneas
 
 ### 📝 DETALLE POR ARCHIVO
 
 | Estado | Archivo | Añadidas | Eliminadas | Neto |
 |--------|---------|----------|------------|------|
-| ✅ ✏️ | `compose.observability.yml` | +48 | -0 | +48 |
-| ✅ ✏️ | `otel/otel-collector-config.yml` | +23 | -0 | +23 |
-| ✅ ✏️ | `prometheus/prometheus.yml` | +8 | -0 | +8 |
-| ✅ ✏️ | `src/main/resources/application.properties` | +1 | -1 | 0 |
+| ✏️ | `README.md` | +66 | -50 | +16 |
 
 ### 📁 LISTA COMPLETA
 
 <details>
-<summary>Ver todos los archivos (4)</summary>
+<summary>Ver todos los archivos (1)</summary>
 
-**✅ Modificados (staged):**
+**✏️ Modificados:**
 ```
-compose.observability.yml
-otel/otel-collector-config.yml
-prometheus/prometheus.yml
-src/main/resources/application.properties
+README.md
 ```
 
 </details>
@@ -42,125 +35,130 @@ src/main/resources/application.properties
 
 ## 📋 CAMBIOS DETALLADOS POR ARCHIVO
 
-### 1. ✏️ `compose.observability.yml` ✅ (staged)
+### 1. ✏️ `README.md`
 
-**Estado:** modificado (staged)
-**Cambios:** +48 / -0
+**Estado:** modificado
+**Cambios:** +66 / -50
 
 ```diff
-+services:
-+  app:
-+    environment:
-+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
-+  otel-collector:
-+    image: otel/opentelemetry-collector-contrib:latest
-+    container_name: otel-collector
-+    command: ["--config=/etc/otel-collector-config.yml"]
-+    volumes:
-+      - ./otel/otel-collector-config.yml:/etc/otel-collector-config.yml:ro
-+    ports:
-+      - "4318:4318"
-+      - "4317:4317"
-+    networks:
-+      - app-net
+-## Observabilidad
++# Ejecución Local con Observabilidad
+-### Métricas (Prometheus)
+-Endpoint disponible en:
+-[http://localhost:8080/actuator/prometheus](http://localhost:8080/actuator/prometheus)
+-[http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
++## 🚀 Ejecución completa (recomendado)
+-**Permite visualizar:**
+-- Request Rate
+-- Error Rate (por código HTTP)
+-- Latencia de requests
++Levanta toda la plataforma (app + base de datos + observabilidad):
+-### Trazas (Jaeger)
+-UI disponible en:
+-[http://localhost:16686/search](http://localhost:16686/search)
++```bash
++docker compose -f compose.yml -f compose.observability.yml up --build
++```
+-**Permite visualizar:**
+-- Trazas distribuidas
+-- Spans por request
++## ✅ Verificación manual
+-### Dashboards (Grafana)
++1. Estado de la aplicación
+-Se incluye un dashboard RED exportado en:
++   `http://localhost:8080/actuator/health`
+-observability/grafana/dashboards/red-dashboard-template.json
++   Respuesta esperada:
+-Este dashboard permite visualizar:
++   ```json
++   {"status":"UP"}
++   ```
+-- Request Rate
+-- Error Rate (5xx)
+-- Latencia (p95)
++2. Métricas (Prometheus)
+-Para usarlo:
++   `http://localhost:8080/actuator/prometheus`
+-1. Abrir Grafana
+-2. Ir a **(+) → Import dashboard**
+-3. Subir el archivo `red-dashboard-template.json` o pegar su contenido
+-4. Seleccionar Prometheus como datasource
++   Ejemplos de métricas:
+-> Nota: es necesario tener Prometheus configurado como datasource en Grafana.
++   - `http_server_requests_seconds`
++   - `jvm_memory_used_bytes`
++3. Trazas (Jaeger)
+-## 🐳 Docker
++   `http://localhost:16686`
+-### Build de la imagen
++   Pasos:
+-```bash
+-docker build -t template-app .
+-```
++   - Seleccionar servicio: `template`
++   - Click en Find Traces
 +
-+  jaeger:
-+    image: jaegertracing/all-in-one:latest
-+    ports:
-+      - "16686:16686"
-+    networks:
-+      - app-net
++4. Grafana
 +
-+  prometheus:
-+    image: prom/prometheus:latest
-+    container_name: prometheus
-+    volumes:
-+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-+    ports:
-+      - "9090:9090"
-+    networks:
-+      - app-net
++   `http://localhost:3000`
 +
-+  grafana:
-+    image: grafana/grafana:latest
-+    container_name: grafana
-+    environment:
-+      GF_SECURITY_ADMIN_USER: admin
-+      GF_SECURITY_ADMIN_PASSWORD: admin
-+    ports:
-+      - "3000:3000"
-+    networks:
-+      - app-net
-+    depends_on:
-+      - prometheus
++   Credenciales:
+----
++   - `user: admin`
++   - `pass: admin`
+-### Ejecutar la app
++## 📊 Dashboard RED (Grafana)
 +
-+networks:
-+  app-net:
++Ubicación:
++
++`observability/grafana/dashboards/red-dashboard-template.json`
++
++Para usarlo:
++
++- Abrir Grafana
++- Ir a (+) → Import dashboard
++- Subir el archivo red-dashboard-template.json o pegar su contenido
++
++Incluye:
++
++- Request Rate
++- Error Rate (5xx)
++- Latencia (p95)
++
++## 🛑 Apagar entorno
+-docker run -p 8080:8080 template-app
++docker compose -f compose.yml -f compose.observability.yml down
+-App disponible en:
++## 🐳 Ejecución aislada de la app (debug)
+-http://localhost:8080
++Solo para pruebas puntuales sin observabilidad.
+----
++Build
+-### Verificar que funciona
++```bash
++docker build -t template-app .
++```
+-Health check:
++Run
+-http://localhost:8080/actuator/health
++```bash
++docker run -p 8080:8080 template-app
++```
+-Respuesta esperada:
++Verificación:
+-```json
+-{"status":"UP"}
+-```
++`http://localhost:8080/actuator/health`
+----
++## 🔍 Verificación de imagen (multi-stage)
+-### Verificar multi-stage (sin Gradle en runtime)
++Validar que la imagen final no incluye herramientas de build:
+-```
++```text
+----
 ```
 
 ---
 
-### 2. ✏️ `otel/otel-collector-config.yml` ✅ (staged)
-
-**Estado:** modificado (staged)
-**Cambios:** +23 / -0
-
-```diff
-+receivers:
-+  otlp:
-+    protocols:
-+      http:
-+        endpoint: 0.0.0.0:4318
-+      grpc:
-+        endpoint: 0.0.0.0:4317
-+
-+processors:
-+  batch:
-+
-+exporters:
-+  otlp:
-+    endpoint: jaeger:4317
-+    tls:
-+      insecure: true
-+
-+service:
-+  pipelines:
-+    traces:
-+      receivers: [otlp]
-+      processors: [batch]
-+      exporters: [otlp]
-```
-
----
-
-### 3. ✏️ `prometheus/prometheus.yml` ✅ (staged)
-
-**Estado:** modificado (staged)
-**Cambios:** +8 / -0
-
-```diff
-+global:
-+  scrape_interval: 5s
-+
-+scrape_configs:
-+  - job_name: "template"
-+    metrics_path: "/actuator/prometheus"
-+    static_configs:
-+      - targets: ["template-app:8080"]
-```
-
----
-
-### 4. ✏️ `src/main/resources/application.properties` ✅ (staged)
-
-**Estado:** modificado (staged)
-**Cambios:** +1 / -1
-
-```diff
--management.otlp.tracing.endpoint=http://localhost:4318/v1/traces
-+management.otlp.tracing.endpoint=http://otel-collector:4318/v1/traces
-```
-
----
-
-*Última actualización: 22/04/2026, 17:56:27*
+*Última actualización: 22/04/2026, 18:11:34*
