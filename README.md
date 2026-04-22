@@ -5,7 +5,6 @@ Endpoint disponible en:
 [http://localhost:8080/actuator/prometheus](http://localhost:8080/actuator/prometheus)
 [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
 
-
 **Permite visualizar:**
 - Request Rate
 - Error Rate (por código HTTP)
@@ -39,3 +38,55 @@ Para usarlo:
 4. Seleccionar Prometheus como datasource
 
 > Nota: es necesario tener Prometheus configurado como datasource en Grafana.
+
+
+## 🐳 Docker
+
+### Build de la imagen
+
+```bash
+docker build -t template-app .
+```
+
+---
+
+### Ejecutar la app
+
+```bash
+docker run -p 8080:8080 template-app
+```
+
+App disponible en:
+
+http://localhost:8080
+
+---
+
+### Verificar que funciona
+
+Health check:
+
+http://localhost:8080/actuator/health
+
+Respuesta esperada:
+
+```json
+{"status":"UP"}
+```
+
+---
+
+### Verificar multi-stage (sin Gradle en runtime)
+
+```bash
+docker ps
+docker exec -it <container_id> sh
+gradle -v
+```
+
+Resultado esperado:
+
+```
+gradle: not found
+```
+---
