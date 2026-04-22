@@ -1,34 +1,38 @@
 # 📊 ESTADO ACTUAL DE CAMBIOS 
-**Actualizado:** 22/04/2026, 16:42:13 
+**Actualizado:** 22/04/2026, 17:56:27 
 **Proyecto:** C:\Users\Usuario\Desktop\Proyectos\Java\template 
-**Último commit:** 9d27af2 - feat(docker): agrega healthcheck de liveness y ajusta application.properties (79 minutes ago) 
+**Último commit:** 3f5be79 - feat(docker): agrega compose con postgres y ajusta datasource interno (73 minutes ago) 
 
 ## 📊 RESUMEN DE CAMBIOS PENDIENTES
 
-- **Total archivos:** 2
+- **Total archivos:** 4
 - **📝 Nuevos:** 0
-- **✏️ Modificados:** 2
+- **✏️ Modificados:** 4
 - **🗑️ Eliminados:** 0
-- **✅ En staging:** 2 (listos para commit)
-- **Líneas añadidas:** +45
-- **Líneas eliminadas:** -3
-- **Balance neto:** +42 líneas
+- **✅ En staging:** 4 (listos para commit)
+- **Líneas añadidas:** +80
+- **Líneas eliminadas:** -1
+- **Balance neto:** +79 líneas
 
 ### 📝 DETALLE POR ARCHIVO
 
 | Estado | Archivo | Añadidas | Eliminadas | Neto |
 |--------|---------|----------|------------|------|
-| ✅ ✏️ | `compose.yml` | +43 | -0 | +43 |
-| ✅ ✏️ | `src/main/resources/application.properties` | +2 | -3 | -1 |
+| ✅ ✏️ | `compose.observability.yml` | +48 | -0 | +48 |
+| ✅ ✏️ | `otel/otel-collector-config.yml` | +23 | -0 | +23 |
+| ✅ ✏️ | `prometheus/prometheus.yml` | +8 | -0 | +8 |
+| ✅ ✏️ | `src/main/resources/application.properties` | +1 | -1 | 0 |
 
 ### 📁 LISTA COMPLETA
 
 <details>
-<summary>Ver todos los archivos (2)</summary>
+<summary>Ver todos los archivos (4)</summary>
 
 **✅ Modificados (staged):**
 ```
-compose.yml
+compose.observability.yml
+otel/otel-collector-config.yml
+prometheus/prometheus.yml
 src/main/resources/application.properties
 ```
 
@@ -38,52 +42,57 @@ src/main/resources/application.properties
 
 ## 📋 CAMBIOS DETALLADOS POR ARCHIVO
 
-### 1. ✏️ `compose.yml` ✅ (staged)
+### 1. ✏️ `compose.observability.yml` ✅ (staged)
 
 **Estado:** modificado (staged)
-**Cambios:** +43 / -0
+**Cambios:** +48 / -0
 
 ```diff
-+version: "3.9"
-+
 +services:
-+  postgres:
-+    image: postgres:16
-+    container_name: postgres
-+    restart: unless-stopped
-+    environment:
-+      POSTGRES_DB: template
-+      POSTGRES_USER: postgres
-+      POSTGRES_PASSWORD: root
-+    ports:
-+      - "5432:5432"
-+    volumes:
-+      - postgres_data:/var/lib/postgresql/data
-+    networks:
-+      - app-net
-+    healthcheck:
-+      test: ["CMD-SHELL", "pg_isready -U postgres -d template"]
-+      interval: 10s
-+      timeout: 5s
-+      retries: 5
-+
 +  app:
-+    build: .
-+    container_name: template-app
-+    depends_on:
-+      postgres:
-+        condition: service_healthy
 +    environment:
-+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/template
-+      SPRING_DATASOURCE_USERNAME: postgres
-+      SPRING_DATASOURCE_PASSWORD: root
++      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
++  otel-collector:
++    image: otel/opentelemetry-collector-contrib:latest
++    container_name: otel-collector
++    command: ["--config=/etc/otel-collector-config.yml"]
++    volumes:
++      - ./otel/otel-collector-config.yml:/etc/otel-collector-config.yml:ro
 +    ports:
-+      - "8080:8080"
++      - "4318:4318"
++      - "4317:4317"
 +    networks:
 +      - app-net
 +
-+volumes:
-+  postgres_data:
++  jaeger:
++    image: jaegertracing/all-in-one:latest
++    ports:
++      - "16686:16686"
++    networks:
++      - app-net
++
++  prometheus:
++    image: prom/prometheus:latest
++    container_name: prometheus
++    volumes:
++      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
++    ports:
++      - "9090:9090"
++    networks:
++      - app-net
++
++  grafana:
++    image: grafana/grafana:latest
++    container_name: grafana
++    environment:
++      GF_SECURITY_ADMIN_USER: admin
++      GF_SECURITY_ADMIN_PASSWORD: admin
++    ports:
++      - "3000:3000"
++    networks:
++      - app-net
++    depends_on:
++      - prometheus
 +
 +networks:
 +  app-net:
@@ -91,19 +100,67 @@ src/main/resources/application.properties
 
 ---
 
-### 2. ✏️ `src/main/resources/application.properties` ✅ (staged)
+### 2. ✏️ `otel/otel-collector-config.yml` ✅ (staged)
 
 **Estado:** modificado (staged)
-**Cambios:** +2 / -3
+**Cambios:** +23 / -0
 
 ```diff
--spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/template
-+spring.datasource.url=jdbc:postgresql://postgres:5432/template
--management.otlp.tracing.endpoint=http://localhost:4318/v1/traces
--
-+management.otlp.tracing.endpoint=http://localhost:4318/v1/traces
++receivers:
++  otlp:
++    protocols:
++      http:
++        endpoint: 0.0.0.0:4318
++      grpc:
++        endpoint: 0.0.0.0:4317
++
++processors:
++  batch:
++
++exporters:
++  otlp:
++    endpoint: jaeger:4317
++    tls:
++      insecure: true
++
++service:
++  pipelines:
++    traces:
++      receivers: [otlp]
++      processors: [batch]
++      exporters: [otlp]
 ```
 
 ---
 
-*Última actualización: 22/04/2026, 16:42:13*
+### 3. ✏️ `prometheus/prometheus.yml` ✅ (staged)
+
+**Estado:** modificado (staged)
+**Cambios:** +8 / -0
+
+```diff
++global:
++  scrape_interval: 5s
++
++scrape_configs:
++  - job_name: "template"
++    metrics_path: "/actuator/prometheus"
++    static_configs:
++      - targets: ["template-app:8080"]
+```
+
+---
+
+### 4. ✏️ `src/main/resources/application.properties` ✅ (staged)
+
+**Estado:** modificado (staged)
+**Cambios:** +1 / -1
+
+```diff
+-management.otlp.tracing.endpoint=http://localhost:4318/v1/traces
++management.otlp.tracing.endpoint=http://otel-collector:4318/v1/traces
+```
+
+---
+
+*Última actualización: 22/04/2026, 17:56:27*
