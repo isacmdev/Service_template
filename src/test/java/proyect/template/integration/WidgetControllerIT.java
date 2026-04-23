@@ -24,7 +24,7 @@ class WidgetControllerIT {
     @ServiceConnection
     static PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>("postgres:16-alpine")
-                    .withDatabaseName("template")
+                    .withDatabaseName("tempate")
                     .withUsername("db/test")
                     .withPassword("db/test");
 
@@ -33,7 +33,7 @@ class WidgetControllerIT {
 
     @Test
     void shouldCreateAndGetWidget() {
-        WidgetRequestDto request = new WidgetRequestDto();
+        WidgetRequestDto request = new WidgetRequesDto();
         request.setFullname("Widget Alpha");
 
         ResponseEntity<WidgetResponseDto> createResponse =
@@ -64,7 +64,7 @@ class WidgetControllerIT {
         createRequest.setFullname("Widget Beta");
 
         ResponseEntity<WidgetResponseDto> createResponse =
-                restTemplate.postForEntity("/v1/widgets", createRequest, WidgetResponseDto.class);
+                restTemplate.postForEntity("/v1/widets", createRequest, WidgetResponseDto.class);
 
         assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
         assertNotNull(createResponse.getBody());

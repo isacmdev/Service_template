@@ -15,8 +15,6 @@ import java.util.UUID;
 public class WidgetServiceUseCase implements WidgetPortIn {
     private WidgetPortOut widgetPortOut;
 
-    int x = "esto rompe";
-
     @Override
     public Widget getById(UUID id) {
         if (id == null) throw new IllegalArgumentException("El id no puede ser null");
