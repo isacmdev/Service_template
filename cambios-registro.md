@@ -1,7 +1,7 @@
 # 📊 ESTADO ACTUAL DE CAMBIOS 
-**Actualizado:** 23/04/2026, 18:20:33 
+**Actualizado:** 23/04/2026, 18:33:27 
 **Proyecto:** C:\Users\Usuario\Desktop\Proyectos\Java\template 
-**Último commit:** c34119b - feat(pipeline)  romper un test (para validar CI). (28 seconds ago) 
+**Último commit:** adde24a - feat(pipeline) test en normalidad y codigo listo. (12 minutes ago) 
 
 ## 📊 RESUMEN DE CAMBIOS PENDIENTES
 
@@ -9,24 +9,25 @@
 - **📝 Nuevos:** 0
 - **✏️ Modificados:** 1
 - **🗑️ Eliminados:** 0
-- **Líneas añadidas:** +3
-- **Líneas eliminadas:** -3
-- **Balance neto:** 0 líneas
+- **✅ En staging:** 1 (listos para commit)
+- **Líneas añadidas:** +0
+- **Líneas eliminadas:** -13
+- **Balance neto:** -13 líneas
 
 ### 📝 DETALLE POR ARCHIVO
 
 | Estado | Archivo | Añadidas | Eliminadas | Neto |
 |--------|---------|----------|------------|------|
-| ✏️ | `src/test/java/proyect/template/integration/WidgetControllerIT.java` | +3 | -3 | 0 |
+| ✅ ✏️ | `src/test/java/proyect/template/TemplateApplicationTests.java` | +0 | -13 | -13 |
 
 ### 📁 LISTA COMPLETA
 
 <details>
 <summary>Ver todos los archivos (1)</summary>
 
-**✏️ Modificados:**
+**✅ Modificados (staged):**
 ```
-src/test/java/proyect/template/integration/WidgetControllerIT.java
+src/test/java/proyect/template/TemplateApplicationTests.java
 ```
 
 </details>
@@ -35,20 +36,15 @@ src/test/java/proyect/template/integration/WidgetControllerIT.java
 
 ## 📋 CAMBIOS DETALLADOS POR ARCHIVO
 
-### 1. ✏️ `src/test/java/proyect/template/integration/WidgetControllerIT.java`
+### 1. ✏️ `src/test/java/proyect/template/TemplateApplicationTests.java` ✅ (staged)
 
-**Estado:** modificado
-**Cambios:** +3 / -3
+**Estado:** modificado (staged)
+**Cambios:** +0 / -13
 
 ```diff
--                    .withDatabaseName("tempate")
-+                    .withDatabaseName("template")
--        WidgetRequestDto request = new WidgetRequesDto();
-+        WidgetRequestDto request = new WidgetRequestDto();
--                restTemplate.postForEntity("/v1/widets", createRequest, WidgetResponseDto.class);
-+                restTemplate.postForEntity("/v1/widgets", createRequest, WidgetResponseDto.class);
+[No hay cambios para mostrar]
 ```
 
 ---
 
-*Última actualización: 23/04/2026, 18:20:33*
+*Última actualización: 23/04/2026, 18:33:27*
