@@ -1,34 +1,32 @@
 # 📊 ESTADO ACTUAL DE CAMBIOS 
-**Actualizado:** 23/04/2026, 18:19:42 
+**Actualizado:** 23/04/2026, 18:20:33 
 **Proyecto:** C:\Users\Usuario\Desktop\Proyectos\Java\template 
-**Último commit:** 1a27b1c - feat(pipeline)  rmper un test o el código (para validar CI). (2 minutes ago) 
+**Último commit:** c34119b - feat(pipeline)  romper un test (para validar CI). (28 seconds ago) 
 
 ## 📊 RESUMEN DE CAMBIOS PENDIENTES
 
-- **Total archivos:** 2
+- **Total archivos:** 1
 - **📝 Nuevos:** 0
-- **✏️ Modificados:** 2
+- **✏️ Modificados:** 1
 - **🗑️ Eliminados:** 0
 - **Líneas añadidas:** +3
-- **Líneas eliminadas:** -5
-- **Balance neto:** -2 líneas
+- **Líneas eliminadas:** -3
+- **Balance neto:** 0 líneas
 
 ### 📝 DETALLE POR ARCHIVO
 
 | Estado | Archivo | Añadidas | Eliminadas | Neto |
 |--------|---------|----------|------------|------|
 | ✏️ | `src/test/java/proyect/template/integration/WidgetControllerIT.java` | +3 | -3 | 0 |
-| ✏️ | `src/main/java/proyect/template/application/WidgetServiceUseCase.java` | +0 | -2 | -2 |
 
 ### 📁 LISTA COMPLETA
 
 <details>
-<summary>Ver todos los archivos (2)</summary>
+<summary>Ver todos los archivos (1)</summary>
 
 **✏️ Modificados:**
 ```
 src/test/java/proyect/template/integration/WidgetControllerIT.java
-src/main/java/proyect/template/application/WidgetServiceUseCase.java
 ```
 
 </details>
@@ -43,26 +41,14 @@ src/main/java/proyect/template/application/WidgetServiceUseCase.java
 **Cambios:** +3 / -3
 
 ```diff
--                    .withDatabaseName("template")
-+                    .withDatabaseName("tempate")
--        WidgetRequestDto request = new WidgetRequestDto();
-+        WidgetRequestDto request = new WidgetRequesDto();
--                restTemplate.postForEntity("/v1/widgets", createRequest, WidgetResponseDto.class);
-+                restTemplate.postForEntity("/v1/widets", createRequest, WidgetResponseDto.class);
+-                    .withDatabaseName("tempate")
++                    .withDatabaseName("template")
+-        WidgetRequestDto request = new WidgetRequesDto();
++        WidgetRequestDto request = new WidgetRequestDto();
+-                restTemplate.postForEntity("/v1/widets", createRequest, WidgetResponseDto.class);
++                restTemplate.postForEntity("/v1/widgets", createRequest, WidgetResponseDto.class);
 ```
 
 ---
 
-### 2. ✏️ `src/main/java/proyect/template/application/WidgetServiceUseCase.java`
-
-**Estado:** modificado
-**Cambios:** +0 / -2
-
-```diff
--    int x = "esto rompe";
--
-```
-
----
-
-*Última actualización: 23/04/2026, 18:19:42*
+*Última actualización: 23/04/2026, 18:20:33*
