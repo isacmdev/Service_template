@@ -86,7 +86,7 @@ check.dependsOn jacocoTestCoverageVerification
 sonar {
     properties {
         property "sonar.projectKey", "Service_template"
-        property "sonar.organization", "Isabel"
+        property "sonar.organization", "isacmdev"
         property "sonar.sourceEncoding", "UTF-8"
     }
 }
