@@ -26,5 +26,5 @@ jobs:
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x ./gradlew
 
-      - name: Build and test
-        run: ./gradlew clean test --no-daemon
+      - name: Build, test and verify coverage
+        run: ./gradlew clean check --no-daemon
