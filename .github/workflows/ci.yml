@@ -37,9 +37,6 @@ jobs:
       - name: Debug Gradle version
         run: ./gradlew --version
 
-      - name: Debug sonar plugin
-        run: ./gradlew dependencies --configuration=classpath
-
       - name: Sonar analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

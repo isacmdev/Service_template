@@ -42,7 +42,6 @@ class ProblemExceptionHandlerTest {
         assertEquals(entity, result);
     }
 
-    // test for active span omitted due to tracing implementation types in test classpath
 }
 
 
