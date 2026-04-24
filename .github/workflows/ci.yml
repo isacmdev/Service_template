@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Clean Gradle cache
+        run: rm -rf ~/.gradle/caches/
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -30,6 +33,12 @@ jobs:
 
       - name: Build, test and verify coverage
         run: ./gradlew clean check --no-daemon
+
+      - name: Debug Gradle version
+        run: ./gradlew --version
+
+      - name: Debug sonar plugin
+        run: ./gradlew dependencies --configuration=classpath
 
       - name: Sonar analysis
         env:
