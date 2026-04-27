@@ -34,14 +34,11 @@ jobs:
       - name: Build and run tests
         run: ./gradlew clean check --no-daemon
 
-      - name: Sonar analysis
+      - name: SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-        run: |
-          ./gradlew sonar \
-            -Dsonar.branch.name=main \
-            --no-daemon
+        run: ./gradlew sonar --no-daemon
 
       - name: SonarQube Quality Gate check
         id: quality-gate
