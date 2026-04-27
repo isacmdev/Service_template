@@ -18,15 +18,12 @@ public class WidgetServiceUseCase implements WidgetPortIn {
     @Override
     public Widget getById(UUID id) {
         if (id == null) throw new IllegalArgumentException("El id no puede ser null");
-        String x = null;
-        x.length();
         return widgetPortOut.findById(id)
                 .orElseThrow(() -> new WidgetNotFoundProblem(id));
     }
 
     @Override
     public Widget create(Widget widget) {
-        if (true == true) {}
          widget.setCreatedAt(Instant.now());
          widget.setUpdatedAt(Instant.now());
         return widgetPortOut.save(widget);
