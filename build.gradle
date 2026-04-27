@@ -101,10 +101,19 @@ sonar {
 dependencyCheck {
     format = 'HTML'
     outputDirectory = layout.buildDirectory.dir("reports")
+
     failOnError = false
+
     failBuildOnCVSS = 8.0
+
+    data {
+        directory = "${System.getProperty('user.home')}/.gradle/dependency-check-data"
+    }
+
     nvd {
         apiKey = System.getenv("NVD_API_KEY")
-        delay = 4000
+        delay = 5000
+        validForHours = 24
+        maxRetryCount = 10
     }
 }
