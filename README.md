@@ -1,4 +1,4 @@
-# Observabilidad
+# Observabilidad - Template Spring Boot
 
 ## 🚀 Ejecución completa (recomendado)
 
