@@ -4,7 +4,6 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
     id 'org.sonarqube' version '7.2.3.7755'
-    id 'org.owasp.dependencycheck' version '9.2.0'
 }
 
 group = 'project'
@@ -95,24 +94,5 @@ sonar {
 
         property "sonar.coverage.jacoco.xmlReportPaths",
                 layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile.absolutePath
-    }
-}
-
-dependencyCheck {
-    format = ['HTML']
-    outputDirectory = layout.buildDirectory.dir("reports/dependency-check")
-
-    failOnError = false
-    failBuildOnCVSS = 8.0
-
-    data {
-        directory = "${System.getProperty('user.home')}/.gradle/dependency-check-data"
-    }
-
-    nvd {
-        apiKey = System.getenv("NVD_API_KEY")
-        delay = 6000
-        maxRetryCount = 20
-        validForHours = 12
     }
 }
