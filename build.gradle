@@ -111,8 +111,8 @@ dependencyCheck {
 
     nvd {
         apiKey = System.getenv("NVD_API_KEY")
-        delay = 5000
-        validForHours = 24
-        maxRetryCount = 10
+        delay = 6000
+        maxRetryCount = 20
+        validForHours = 12
     }
 }
