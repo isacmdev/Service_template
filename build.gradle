@@ -100,10 +100,9 @@ sonar {
 
 dependencyCheck {
     format = ['HTML']
-    outputDirectory = layout.buildDirectory.dir("reports")
+    outputDirectory = layout.buildDirectory.dir("reports/dependency-check")
 
     failOnError = false
-
     failBuildOnCVSS = 8.0
 
     data {
