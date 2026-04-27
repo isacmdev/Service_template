@@ -99,7 +99,7 @@ sonar {
 }
 
 dependencyCheck {
-    format = 'HTML'
+    format = ['HTML']
     outputDirectory = layout.buildDirectory.dir("reports")
 
     failOnError = false
