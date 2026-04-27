@@ -2,9 +2,9 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.flywaydb.flyway' version '10.17.0'
     id 'jacoco'
     id 'org.sonarqube' version '7.2.3.7755'
+    id 'org.owasp.dependencycheck' version '9.2.0'
 }
 
 group = 'project'
@@ -14,6 +14,10 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+repositories {
+    mavenCentral()
 }
 
 jacoco {
@@ -26,34 +30,34 @@ configurations {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
-    implementation 'org.zalando:problem-spring-web-starter:0.29.1'
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
-    implementation 'org.flywaydb:flyway-core:10.17.0'
-    implementation 'org.flywaydb:flyway-database-postgresql:10.17.0'
-    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    compileOnly 'org.projectlombok:lombok'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
-    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-otlp'
+    implementation 'org.zalando:problem-spring-web-starter:0.29.1'
+
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
     runtimeOnly 'org.postgresql:postgresql'
 
+    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-otlp'
+
+    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.testcontainers:junit-jupiter:1.19.8'
-    testImplementation 'org.testcontainers:postgresql:1.19.8'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -64,7 +68,6 @@ tasks.named('test') {
 
 jacocoTestReport {
     dependsOn test
-
     reports {
         xml.required = true
         html.required = true
@@ -73,7 +76,6 @@ jacocoTestReport {
 
 jacocoTestCoverageVerification {
     dependsOn test
-
     violationRules {
         rule {
             limit {
@@ -91,6 +93,11 @@ sonar {
         property "sonar.organization", "isacmdev"
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.coverage.jacoco.xmlReportPaths",
-                tasks.jacocoTestReport.get().reports.xml.outputLocation.get().asFile.absolutePath
+                layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile.absolutePath
     }
+}
+
+dependencyCheck {
+    format = 'HTML'
+    outputDirectory = layout.buildDirectory.dir("reports")
 }
