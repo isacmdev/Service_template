@@ -28,12 +28,6 @@ jobs:
       - name: Build and test
         run: ./gradlew clean build --no-daemon
 
-      - name: List build/libs
-        run: ls -la build/libs || echo "No libs"
-
-      - name: Clean previous SBOM (if any)
-        run: rm -f build/reports/bom.json
-
       - name: Generate SBOM (CycloneDX)
         run: ./gradlew cyclonedxBom --rerun-tasks --no-daemon
 
