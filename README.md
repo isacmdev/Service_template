@@ -2,7 +2,7 @@
 
 ## 🚀 Ejecución completa (recomendado)
 
-Levanta toda la plataforma (app + base de datos + observabilidad):
+## 🟢 Levanta toda la plataforma (app + base de datos + observabilidad):
 
 ```bash
 docker compose -f compose.yml -f compose.observability.yml up --build
