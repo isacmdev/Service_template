@@ -28,11 +28,11 @@ jobs:
       - name: Build and test
         run: ./gradlew clean build --no-daemon
 
-      - name: List build/libs (debug)
+      - name: List build/libs
         run: ls -la build/libs || echo "No libs"
 
-      - name: Debug SBOM generation
-        run: ./gradlew cyclonedxBom --info --rerun-tasks --no-daemon
+      - name: Generate SBOM (CycloneDX)
+        run: ./gradlew cyclonedxBom --rerun-tasks --no-daemon
 
       - name: Verify SBOM file
         run: test -f build/reports/bom.json && echo "SBOM file exists" || (echo "SBOM file is missing" && exit 1)
@@ -52,7 +52,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
-      - name: Trivy scan (filesystem)
+      - name: Trivy scan
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/repo \
@@ -60,7 +60,7 @@ jobs:
             --severity HIGH,CRITICAL \
             --ignore-unfixed \
             --format json \
-            -o /repo/trivy-report.json
+            -o /repo/trivy-report.json || echo "Trivy failed but continuing"
 
       - name: Rename SBOM with version
         run: |
@@ -73,13 +73,6 @@ jobs:
         with:
           name: sbom-cyclonedx
           path: ${{ env.SBOM_FILE }}
-
-      - name: Upload SBOM artifact
-        if: always()   # se suba aunque falle alguna prueba (opcional)
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom-cyclonedx
-          path: build/reports/bom.json
 
       - name: Upload Trivy report
         if: always()

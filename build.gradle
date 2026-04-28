@@ -97,3 +97,8 @@ sonar {
                 layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile.absolutePath
     }
 }
+cyclonedxBom {
+    outputName = "bom"
+    outputFormat = "json"
+    destination = file("build/reports")
+}
