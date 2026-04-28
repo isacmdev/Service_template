@@ -28,11 +28,14 @@ jobs:
       - name: Build and test
         run: ./gradlew clean build --no-daemon
 
-      - name: Generate SBOM (CycloneDX)
-        run: ./gradlew cyclonedxBom --no-daemon
+      - name: List build/libs (debug)
+        run: ls -la build/libs || echo "No libs"
+
+      - name: Debug SBOM generation
+        run: ./gradlew cyclonedxBom --info --rerun-tasks --no-daemon
 
       - name: Verify SBOM file
-        run: test -f build/reports/bom.json && echo "SBOM generated" || exit 1
+        run: test -f build/reports/bom.json && echo "SBOM file exists" || (echo "SBOM file is missing" && exit 1)
 
       - name: Sonar analysis
         env:
@@ -49,15 +52,15 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
-      - name: Trivy scan (robust)
+      - name: Trivy scan (filesystem)
         run: |
           docker run --rm \
-          -v ${{ github.workspace }}:/repo \
-          aquasec/trivy:latest fs /repo/build/libs \
-          --severity HIGH,CRITICAL \
-          --ignore-unfixed \
-          --format json \
-          -o /repo/trivy-report.json
+            -v ${{ github.workspace }}:/repo \
+            aquasec/trivy:latest fs /repo \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --format json \
+            -o /repo/trivy-report.json
 
       - name: Rename SBOM with version
         run: |

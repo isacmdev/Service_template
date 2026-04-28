@@ -1,34 +1,32 @@
 # 📊 ESTADO ACTUAL DE CAMBIOS 
-**Actualizado:** 28/04/2026, 12:55:51 
+**Actualizado:** 28/04/2026, 13:20:39 
 **Proyecto:** C:\Users\Usuario\Desktop\Proyectos\Java\template 
-**Último commit:** e512a7f - feat(sotest) arregle test que estaban fallando (18 hours ago) 
+**Último commit:** a19afd0 - feat (ci) modifique el archivo ci.yml para generar SBOM en el pipeline (23 minutes ago) 
 
 ## 📊 RESUMEN DE CAMBIOS PENDIENTES
 
-- **Total archivos:** 2
+- **Total archivos:** 1
 - **📝 Nuevos:** 0
-- **✏️ Modificados:** 2
+- **✏️ Modificados:** 1
 - **🗑️ Eliminados:** 0
-- **Líneas añadidas:** +26
-- **Líneas eliminadas:** -0
-- **Balance neto:** +26 líneas
+- **Líneas añadidas:** +13
+- **Líneas eliminadas:** -10
+- **Balance neto:** +3 líneas
 
 ### 📝 DETALLE POR ARCHIVO
 
 | Estado | Archivo | Añadidas | Eliminadas | Neto |
 |--------|---------|----------|------------|------|
-| ✏️ | `.github/workflows/ci.yml` | +25 | -0 | +25 |
-| ✏️ | `build.gradle` | +1 | -0 | +1 |
+| ✏️ | `.github/workflows/ci.yml` | +13 | -10 | +3 |
 
 ### 📁 LISTA COMPLETA
 
 <details>
-<summary>Ver todos los archivos (2)</summary>
+<summary>Ver todos los archivos (1)</summary>
 
 **✏️ Modificados:**
 ```
 .github/workflows/ci.yml
-build.gradle
 ```
 
 </details>
@@ -40,47 +38,34 @@ build.gradle
 ### 1. ✏️ `.github/workflows/ci.yml`
 
 **Estado:** modificado
-**Cambios:** +25 / -0
+**Cambios:** +13 / -10
 
 ```diff
-+      - name: Generate SBOM (CycloneDX)
-+        run: ./gradlew cyclonedxBom --no-daemon
+-      - name: Generate SBOM (CycloneDX)
+-        run: ./gradlew cyclonedxBom --no-daemon
++      - name: List build/libs (debug)
++        run: ls -la build/libs || echo "No libs"
 +
-+      - name: Verify SBOM file
-+        run: test -f build/reports/bom.json && echo "SBOM generated" || exit 1
-+
-+      - name: Rename SBOM with version
-+        run: |
-+          VERSION=${GITHUB_REF_NAME:-$(git rev-parse --short HEAD)}
-+          cp build/reports/bom.json "sbom-$VERSION.json"
-+          echo "SBOM_FILE=sbom-$VERSION.json" >> $GITHUB_ENV
-+
-+      - name: Upload versioned SBOM
-+        uses: actions/upload-artifact@v4
-+        with:
-+          name: sbom-cyclonedx
-+          path: ${{ env.SBOM_FILE }}
-+
-+      - name: Upload SBOM artifact
-+        if: always()   # se suba aunque falle alguna prueba (opcional)
-+        uses: actions/upload-artifact@v4
-+        with:
-+          name: sbom-cyclonedx
-+          path: build/reports/bom.json
-+
++      - name: Generate SBOM (CycloneDX) - force
++        run: ./gradlew cyclonedxBom --rerun-tasks --no-daemon
+-        run: test -f build/reports/bom.json && echo "SBOM generated" || exit 1
++        run: test -f build/reports/bom.json && echo "SBOM file exists" || (echo "SBOM file is missing" && exit 1)
+-      - name: Trivy scan (robust)
++      - name: Trivy scan (filesystem)
+-          -v ${{ github.workspace }}:/repo \
+-          aquasec/trivy:latest fs /repo/build/libs \
+-          --severity HIGH,CRITICAL \
+-          --ignore-unfixed \
+-          --format json \
+-          -o /repo/trivy-report.json
++            -v ${{ github.workspace }}:/repo \
++            aquasec/trivy:latest fs /repo \
++            --severity HIGH,CRITICAL \
++            --ignore-unfixed \
++            --format json \
++            -o /repo/trivy-report.json
 ```
 
 ---
 
-### 2. ✏️ `build.gradle`
-
-**Estado:** modificado
-**Cambios:** +1 / -0
-
-```diff
-+    id 'org.cyclonedx.bom' version '1.8.2'
-```
-
----
-
-*Última actualización: 28/04/2026, 12:55:51*
+*Última actualización: 28/04/2026, 13:20:39*
