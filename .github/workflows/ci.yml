@@ -31,6 +31,9 @@ jobs:
       - name: List build/libs
         run: ls -la build/libs || echo "No libs"
 
+      - name: Clean previous SBOM (if any)
+        run: rm -f build/reports/bom.json
+
       - name: Generate SBOM (CycloneDX)
         run: ./gradlew cyclonedxBom --rerun-tasks --no-daemon
 
@@ -64,7 +67,7 @@ jobs:
 
       - name: Rename SBOM with version
         run: |
-          VERSION=${GITHUB_REF_NAME:-$(git rev-parse --short HEAD)}
+          VERSION=$(git rev-parse --short HEAD)
           cp build/reports/bom.json "sbom-$VERSION.json"
           echo "SBOM_FILE=sbom-$VERSION.json" >> $GITHUB_ENV
 
