@@ -49,15 +49,60 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
-      - name: Trivy scan
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: myapp:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trivy image scan
+        id: trivy-image
+        run: |
+          mkdir -p scan-results
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v ${{ github.workspace }}/scan-results:/results \
+            aquasec/trivy:latest image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --format sarif \
+            --output /results/trivy-image-results.sarif \
+            myapp:ci-${{ github.sha }} \
+          && echo "TRIVY_EXIT_CODE=0" >> $GITHUB_ENV \
+          || echo "TRIVY_EXIT_CODE=1" >> $GITHUB_ENV
+
+      - name: Upload Trivy image SARIF to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: scan-results/trivy-image-results.sarif
+
+      - name: Fail job if HIGH/CRITICAL vulnerabilities found
+        if: env.TRIVY_EXIT_CODE == '1'
+        run: exit 1
+
+      - name: Trivy filesystem scan
+        if: always()
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/repo \
-            aquasec/trivy:latest fs /repo \
+            aquasec/trivy:0.58.1 fs /repo \
             --severity HIGH,CRITICAL \
             --ignore-unfixed \
             --format json \
-            -o /repo/trivy-report.json || echo "Trivy failed but continuing"
+            -o /repo/trivy-fs-report.json || echo "Trivy FS failed but continuing"
+
+      - name: Upload Trivy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-dependency-report
+          path: trivy-report.json
 
       - name: Rename SBOM with version
         run: |
@@ -70,10 +115,3 @@ jobs:
         with:
           name: sbom-cyclonedx
           path: ${{ env.SBOM_FILE }}
-
-      - name: Upload Trivy report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-dependency-report
-          path: trivy-report.json
