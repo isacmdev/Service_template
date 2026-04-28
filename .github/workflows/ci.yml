@@ -28,6 +28,12 @@ jobs:
       - name: Build and test
         run: ./gradlew clean build --no-daemon
 
+      - name: Generate SBOM (CycloneDX)
+        run: ./gradlew cyclonedxBom --no-daemon
+
+      - name: Verify SBOM file
+        run: test -f build/reports/bom.json && echo "SBOM generated" || exit 1
+
       - name: Sonar analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -52,6 +58,25 @@ jobs:
           --ignore-unfixed \
           --format json \
           -o /repo/trivy-report.json
+
+      - name: Rename SBOM with version
+        run: |
+          VERSION=${GITHUB_REF_NAME:-$(git rev-parse --short HEAD)}
+          cp build/reports/bom.json "sbom-$VERSION.json"
+          echo "SBOM_FILE=sbom-$VERSION.json" >> $GITHUB_ENV
+
+      - name: Upload versioned SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: ${{ env.SBOM_FILE }}
+
+      - name: Upload SBOM artifact
+        if: always()   # se suba aunque falle alguna prueba (opcional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: build/reports/bom.json
 
       - name: Upload Trivy report
         if: always()
