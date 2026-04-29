@@ -156,7 +156,7 @@ jobs:
       - name: Terraform Init
         run: cd dev && terraform init
 
-#      - name: Terraform Plan
-#        run: cd dev && terraform plan
+      - name: Terraform Plan
+        run: cd dev && terraform plan
         # Opcional: si quisieras guardar el plan como artefacto
         # run: cd dev && terraform plan -out=tfplan
